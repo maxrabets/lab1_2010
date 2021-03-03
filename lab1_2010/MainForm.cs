@@ -8,7 +8,7 @@ using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
 /// <summary>
-/// /dfdf
+/// /dfdfmhm
 /// </summary>
 namespace lab1_2010
 {
