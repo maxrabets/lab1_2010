@@ -7,7 +7,9 @@ using System.Linq;
 using System.IO;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-
+/// <summary>
+/// /dfdf
+/// </summary>
 namespace lab1_2010
 {
     public partial class MainForm : Form
