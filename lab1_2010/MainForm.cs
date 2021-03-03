@@ -12,6 +12,7 @@ namespace lab1_2010
 {
     public partial class MainForm : Form
     {
+        int a = 177;
         private bool[,] bitArray;
         private int[,] bitArray2;
         private int[,] bitArray3;
