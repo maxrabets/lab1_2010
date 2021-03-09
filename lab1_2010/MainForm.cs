@@ -1,11 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
-using System.Linq;
-using System.IO;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 /// <summary>
 /// /dfdfmhm
@@ -79,12 +73,12 @@ namespace lab1_2010
             int[,] bitArray2 = new int[width, height];
             int min = findMin(bitArray1);
             int max = findMax(bitArray1);
-            int interval = 255 / (max - min);
+            double interval = 255 / (max - min);
             for (int i = 0; i < width; i++)
             {
                 for (int j = 0; j < height; j++)
                 {
-                    bitArray2[i, j] = 255 - interval*(bitArray1[i,j] - min);
+                    bitArray2[i, j] = 255 - (int)Math.Round(interval*(bitArray1[i,j] - min));
                 }
             }
             return bitArray2;
@@ -105,17 +99,22 @@ namespace lab1_2010
                 bitArray2 = new int[bitmap.Width, bitmap.Height];
                 dataGridView1.Rows.Clear();
                 dataGridView2.Rows.Clear();
+                dataGridView3.Rows.Clear();
                 dataGridView1.Columns.Clear();
                 dataGridView2.Columns.Clear();
+                dataGridView3.Columns.Clear();
                 for (int i = 0; i < bitmap.Height; i++)
                 {
                     dataGridView1.Columns.Add(i.ToString(), i.ToString());
                     dataGridView2.Columns.Add(i.ToString(), i.ToString());
+                    dataGridView3.Columns.Add(i.ToString(), i.ToString());
                     dataGridView1.Columns[i].Width = 20;
                     dataGridView2.Columns[i].Width = 20;
+                    dataGridView3.Columns[i].Width = 20;
                 }
                 dataGridView1.Rows.Add(bitmap.Height);
                 dataGridView2.Rows.Add(bitmap.Height);
+                dataGridView3.Rows.Add(bitmap.Height);
                 
                 for (int i = 0; i < bitmap.Width; i++)
                 {
@@ -182,13 +181,63 @@ namespace lab1_2010
                         bitmap2.SetPixel(i, j, Color.FromArgb(bitArray3[i, j], bitArray3[i, j], bitArray3[i, j]));
                     }
                 }
+                bitArray3 = convertBinToGray(bitArray2);
+                
 
+                for (int i = 0; i < bitmap.Width; i++)
+                {
+                    for (int j = 0; j < bitmap.Height; j++)
+                    {
+                        dataGridView3.Rows[j].Cells[i].Value = bitArray3[i, j];
+                        bitmap2.SetPixel(i, j, Color.FromArgb(bitArray3[i, j], bitArray3[i, j], bitArray3[i, j]));
+                    }
+                }
                 pictureBox2.Image = bitmap2;
-
             }
-            
         }
 
-        private void count() { }
+        private void saveFileButton_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    pictureBox2.Image.Save(saveFileDialog1.FileName);
+                }
+                catch
+                {
+                    MessageBox.Show("Ошибка");
+                }                
+            }
+        }
+
+        private Bitmap CreateNonIndexedImage(Image src)
+        {
+            Bitmap newBmp = new Bitmap(src.Width, src.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
+            using (Graphics gfx = Graphics.FromImage(newBmp))
+            {
+                gfx.DrawImage(src, 0, 0);
+            }
+            return newBmp;
+        }
+
+        private void dataGridView1_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            Bitmap bmp = CreateNonIndexedImage(pictureBox1.Image);
+            if(int.Parse(dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString()) == 0)
+                bmp.SetPixel(e.ColumnIndex, e.RowIndex, Color.White);
+            else
+                bmp.SetPixel(e.ColumnIndex, e.RowIndex, Color.Black);
+            pictureBox1.Image = bmp;
+        }
+
+        private void dataGridView3_CellEndEdit(object sender, DataGridViewCellEventArgs e)
+        {
+            Bitmap bmp = CreateNonIndexedImage(pictureBox2.Image);
+            int value = int.Parse(dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString());
+            bmp.SetPixel(e.ColumnIndex, e.RowIndex, Color.FromArgb(value, value, value));
+            pictureBox2.Image = bmp;
+            bmp.
+        }
     }
 }
