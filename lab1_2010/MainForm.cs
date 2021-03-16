@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 /// <summary>
 /// /dfdfmhm
 /// </summary>
@@ -9,9 +11,9 @@ namespace lab1_2010
     public partial class MainForm : Form
     {
         int a = 177;
-        private bool[,] bitArray;
-        private int[,] bitArray2;
-        private int[,] bitArray3;
+        private bool[,] binaryBitmapArray;
+        private int[,] intermediateBitmapArray;
+        private int[,] grayBitmapArray;
         Bitmap bitmap;
 
         public MainForm()
@@ -22,13 +24,13 @@ namespace lab1_2010
         private bool findRadius(int i, int j, int i1, int j1, int R)
         {
             if (j1 < 0 || i1 < 0 || i1 >= bitmap.Height || j1 >= bitmap.Width) return false;
-            if (bitArray[i, j] != bitArray[i1, j1])
+            if (binaryBitmapArray[i, j] != binaryBitmapArray[i1, j1])
             {
                 //ПРОТИВОПОЛОЖНЫЙ ПИКСЕЛЬ НАЙДЕН 
-                if (bitArray[i, j] == false)
-                    bitArray2[i, j] = -R;
+                if (binaryBitmapArray[i, j] == false)
+                    intermediateBitmapArray[i, j] = -R;
                 else
-                    bitArray2[i, j] = R;
+                    intermediateBitmapArray[i, j] = R;
                 return true;
             }
             return false;
@@ -95,33 +97,38 @@ namespace lab1_2010
                 Bitmap newBitmap = new Bitmap(bitmap.Width, bitmap.Height, bitmap.PixelFormat);
                 pictureBox1.Image = bitmap;
                 pictureBox2.Image = newBitmap;
-                bitArray = new bool[bitmap.Width, bitmap.Height];
-                bitArray2 = new int[bitmap.Width, bitmap.Height];
+                binaryBitmapArray = new bool[bitmap.Width, bitmap.Height];
+                intermediateBitmapArray = new int[bitmap.Width, bitmap.Height];
                 dataGridView1.Rows.Clear();
                 dataGridView2.Rows.Clear();
                 dataGridView3.Rows.Clear();
                 dataGridView1.Columns.Clear();
                 dataGridView2.Columns.Clear();
                 dataGridView3.Columns.Clear();
-                for (int i = 0; i < bitmap.Height; i++)
+                for (int i = 0; i < bitmap.Width; i++)
                 {
                     dataGridView1.Columns.Add(i.ToString(), i.ToString());
                     dataGridView2.Columns.Add(i.ToString(), i.ToString());
                     dataGridView3.Columns.Add(i.ToString(), i.ToString());
                     dataGridView1.Columns[i].Width = 20;
                     dataGridView2.Columns[i].Width = 20;
-                    dataGridView3.Columns[i].Width = 20;
+                    dataGridView3.Columns[i].Width = 30;
                 }
                 dataGridView1.Rows.Add(bitmap.Height);
                 dataGridView2.Rows.Add(bitmap.Height);
                 dataGridView3.Rows.Add(bitmap.Height);
-                
+                for (int i = 0; i < bitmap.Height; i++)
+                {
+                    dataGridView1.Rows[i].HeaderCell.Value = i.ToString();
+                    dataGridView2.Rows[i].HeaderCell.Value = i.ToString();
+                    dataGridView3.Rows[i].HeaderCell.Value = i.ToString();
+                }
                 for (int i = 0; i < bitmap.Width; i++)
                 {
                     for (int j = 0; j < bitmap.Height; j++)
                     {
                         Color pixel = bitmap.GetPixel(i, j);
-                        bitArray[i, j] = pixel.R == 0 && pixel.G == 0 && pixel.B == 0;
+                        binaryBitmapArray[i, j] = pixel.R == 0 && pixel.G == 0 && pixel.B == 0;
                         if(pixel.R == 0)
                             dataGridView1.Rows[j].Cells[i].Value = 1;
                         else
@@ -136,7 +143,7 @@ namespace lab1_2010
                     for (int j = 0; j < bitmap.Height; j++)
                     {
                         int R = 1;                        
-                        while (bitArray2[i, j] == 0)
+                        while (intermediateBitmapArray[i, j] == 0)
                         {
                             int i1, j1;
                             i1 = i + R;
@@ -176,20 +183,20 @@ namespace lab1_2010
                             R++;
                             
                         }
-                        dataGridView2.Rows[j].Cells[i].Value = bitArray2[i, j];
-                        bitArray3 = convertBinToGray(bitArray2);
-                        bitmap2.SetPixel(i, j, Color.FromArgb(bitArray3[i, j], bitArray3[i, j], bitArray3[i, j]));
+                        dataGridView2.Rows[j].Cells[i].Value = intermediateBitmapArray[i, j];
+                        grayBitmapArray = convertBinToGray(intermediateBitmapArray);
+                        bitmap2.SetPixel(i, j, Color.FromArgb(grayBitmapArray[i, j], grayBitmapArray[i, j], grayBitmapArray[i, j]));
                     }
                 }
-                bitArray3 = convertBinToGray(bitArray2);
+                grayBitmapArray = convertBinToGray(intermediateBitmapArray);
                 
 
                 for (int i = 0; i < bitmap.Width; i++)
                 {
                     for (int j = 0; j < bitmap.Height; j++)
                     {
-                        dataGridView3.Rows[j].Cells[i].Value = bitArray3[i, j];
-                        bitmap2.SetPixel(i, j, Color.FromArgb(bitArray3[i, j], bitArray3[i, j], bitArray3[i, j]));
+                        dataGridView3.Rows[j].Cells[i].Value = grayBitmapArray[i, j];
+                        bitmap2.SetPixel(i, j, Color.FromArgb(grayBitmapArray[i, j], grayBitmapArray[i, j], grayBitmapArray[i, j]));
                     }
                 }
                 pictureBox2.Image = bitmap2;
@@ -237,7 +244,147 @@ namespace lab1_2010
             int value = int.Parse(dataGridView1.Rows[e.RowIndex].Cells[e.ColumnIndex].Value.ToString());
             bmp.SetPixel(e.ColumnIndex, e.RowIndex, Color.FromArgb(value, value, value));
             pictureBox2.Image = bmp;
-            bmp.
+        }
+
+        private void saveBinButton_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    pictureBox1.Image.Save(saveFileDialog1.FileName);
+                }
+                catch
+                {
+                    MessageBox.Show("Ошибка");
+                }
+            }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            // binary
+            Series binGistogramm = new Series("binary");
+            binGistogramm.ChartType = SeriesChartType.Column;
+            int numberOf1 = 0;
+            int numberOf0 = 0;
+            
+            foreach(bool pixelColor in binaryBitmapArray)
+            {
+                if (pixelColor)
+                    numberOf1++;
+                else
+                    numberOf0++;
+            }
+            binGistogramm.Points.AddXY(0, numberOf0);
+            binGistogramm.Points.AddXY(1, numberOf1);
+            binChart.Series.Clear();
+            binChart.Series.Add(binGistogramm);
+
+            // gray
+            Series grayGistogramm = new Series("gray");
+            grayGistogramm.ChartType = SeriesChartType.Column;
+
+            //List<int> valuesInGrayBitmap = getValuesInGrayBitmap(grayBitmapArray);
+            Dictionary<int, int> numberOfColors = getNumberOfColorsInGrayBitmap(grayBitmapArray);
+            foreach(int key in numberOfColors.Keys)
+            {
+                grayGistogramm.Points.AddXY(key, numberOfColors[key]);
+            }
+            grayChart.Series.Clear();
+            grayChart.Series.Add(grayGistogramm);
+        }
+
+
+        private List<int> getValuesInGrayBitmap(int[,] bmp)
+        {
+            List<int> valuesInGrayBitmap = new List<int>();
+            foreach (int pixelColor in bmp)
+            {
+                if (!valuesInGrayBitmap.Contains(pixelColor))
+                {
+                    valuesInGrayBitmap.Add(pixelColor);
+                }
+            }
+            return valuesInGrayBitmap;
+        }
+
+
+        private Dictionary<int, int> getNumberOfColorsInGrayBitmap(int[,] bmp)
+        {
+            Dictionary<int, int> numberOfColors = new Dictionary<int, int>();
+            foreach (int pixelColor in bmp)
+            {
+                if (!numberOfColors.ContainsKey(pixelColor))
+                {
+                    numberOfColors.Add(pixelColor, 1);
+                }
+                else
+                {
+                    numberOfColors[pixelColor]++;
+                }
+            }
+            return numberOfColors;
+        }
+
+        private void openGray_Click(object sender, EventArgs e)
+        {
+            string fileName;
+            if (openFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                fileName = openFileDialog1.FileName;
+                //Image image = Bitmap.FromFile(fileName);
+                bitmap = (Bitmap)Bitmap.FromFile(fileName);
+                pictureBox3.Image = bitmap;
+                pictureBox4.Image = binarize(bitmap);
+            }
+        }
+
+        private Bitmap binarize(Bitmap grayImage) 
+        {
+            Bitmap binBitmap = new Bitmap(grayImage.Width, grayImage.Height);
+            int[,] grayBitArray = new int[grayImage.Width, grayImage.Height];
+            byte[,] binBitArray = new byte[grayImage.Width, grayImage.Height];
+            int sum = 0;
+            for (int i = 0; i < grayImage.Width; i++)
+            {
+                for (int j = 0; j < grayImage.Height; j++)
+                {
+                    Color pixel = grayImage.GetPixel(i, j);
+                    grayBitArray[i, j] = pixel.R;
+                    sum += grayBitArray[i, j];
+                }
+            }
+            int avg = sum / (grayImage.Width * grayImage.Height);
+            int borderlineValue = 255 - avg;
+            for (int i = 0; i < grayImage.Width; i++)
+            {
+                for (int j = 0; j < grayImage.Height; j++)
+                {
+                    if(borderlineValue <= grayBitArray[i, j])
+                        binBitArray[i, j] = 1;
+                    else
+                        binBitArray[i, j] = 0;
+                    binBitmap.SetPixel(i, j, Color.FromArgb(binBitArray[i, j], binBitArray[i, j], binBitArray[i, j]));
+                }
+            }
+            
+            return binBitmap;
+        }
+
+        private void saveButton_Click(object sender, EventArgs e)
+        {
+            if (saveFileDialog1.ShowDialog() == DialogResult.OK)
+            {
+                try
+                {
+                    pictureBox4.Image.Save(saveFileDialog1.FileName);
+                }
+                catch
+                {
+                    MessageBox.Show("Ошибка");
+                }
+            }
         }
     }
 }
