@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
+using System.Linq;
 /// <summary>
 /// /dfdfmhm
 /// </summary>
@@ -335,40 +336,45 @@ namespace lab1_2010
                 fileName = openFileDialog1.FileName;
                 //Image image = Bitmap.FromFile(fileName);
                 bitmap = (Bitmap)Bitmap.FromFile(fileName);
+                byte borderlineValue = (byte)(255 - calculateAverageBrightness(bitmap));
                 pictureBox3.Image = bitmap;
-                pictureBox4.Image = binarize(bitmap);
+                pictureBox4.Image = binarize(bitmap, borderlineValue);
             }
         }
 
-        private Bitmap binarize(Bitmap grayImage) 
+        private byte calculateAverageBrightness(Bitmap grayImage)
         {
-            Bitmap binBitmap = new Bitmap(grayImage.Width, grayImage.Height);
-            int[,] grayBitArray = new int[grayImage.Width, grayImage.Height];
-            byte[,] binBitArray = new byte[grayImage.Width, grayImage.Height];
             int sum = 0;
             for (int i = 0; i < grayImage.Width; i++)
             {
                 for (int j = 0; j < grayImage.Height; j++)
                 {
                     Color pixel = grayImage.GetPixel(i, j);
-                    grayBitArray[i, j] = pixel.R;
-                    sum += grayBitArray[i, j];
+                    sum += pixel.R;
                 }
             }
-            int avg = sum / (grayImage.Width * grayImage.Height);
-            int borderlineValue = 255 - avg;
+            byte avg = (byte)( sum / (grayImage.Width * grayImage.Height));
+            return avg;
+        }
+
+        private Bitmap binarize(Bitmap grayImage, byte borderlineValue) 
+        {
+            Bitmap binBitmap = new Bitmap(grayImage.Width, grayImage.Height);
+            int[,] grayBitArray = new int[grayImage.Width, grayImage.Height];
+            byte[,] binBitArray = new byte[grayImage.Width, grayImage.Height];
             for (int i = 0; i < grayImage.Width; i++)
             {
                 for (int j = 0; j < grayImage.Height; j++)
                 {
-                    if(borderlineValue <= grayBitArray[i, j])
-                        binBitArray[i, j] = 1;
-                    else
+                    Color pixel = grayImage.GetPixel(i, j);
+                    grayBitArray[i, j] = pixel.B;
+                    if (grayBitArray[i, j] <= borderlineValue)
                         binBitArray[i, j] = 0;
+                    else
+                        binBitArray[i, j] = 255;
                     binBitmap.SetPixel(i, j, Color.FromArgb(binBitArray[i, j], binBitArray[i, j], binBitArray[i, j]));
                 }
             }
-            
             return binBitmap;
         }
 
@@ -385,6 +391,18 @@ namespace lab1_2010
                     MessageBox.Show("Ошибка");
                 }
             }
+        }
+
+        private void button2_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void binarizeButton_Click(object sender, EventArgs e)
+        {
+                //Image image = Bitmap.FromFile(fileName);
+                bitmap = (Bitmap)pictureBox3.Image;
+                pictureBox4.Image = binarize(bitmap, (byte)numericUpDown1.Value);
         }
     }
 }
