@@ -51,12 +51,13 @@
             this.grayChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.binChart = new System.Windows.Forms.DataVisualization.Charting.Chart();
             this.binarization = new System.Windows.Forms.TabPage();
+            this.binarizeButton = new System.Windows.Forms.Button();
+            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
             this.saveButton = new System.Windows.Forms.Button();
             this.pictureBox4 = new System.Windows.Forms.PictureBox();
             this.pictureBox3 = new System.Windows.Forms.PictureBox();
             this.openGray = new System.Windows.Forms.Button();
-            this.numericUpDown1 = new System.Windows.Forms.NumericUpDown();
-            this.binarizeButton = new System.Windows.Forms.Button();
+            this.buildGistogrammsButton2 = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.dataGridView2)).BeginInit();
@@ -68,9 +69,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.grayChart)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.binChart)).BeginInit();
             this.binarization.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).BeginInit();
             this.SuspendLayout();
             // 
             // openFileButton
@@ -245,6 +246,7 @@
             // 
             // binarization
             // 
+            this.binarization.Controls.Add(this.buildGistogrammsButton2);
             this.binarization.Controls.Add(this.binarizeButton);
             this.binarization.Controls.Add(this.numericUpDown1);
             this.binarization.Controls.Add(this.saveButton);
@@ -257,6 +259,33 @@
             this.binarization.TabIndex = 2;
             this.binarization.Text = "Бинаризация";
             this.binarization.UseVisualStyleBackColor = true;
+            // 
+            // binarizeButton
+            // 
+            this.binarizeButton.Location = new System.Drawing.Point(647, 12);
+            this.binarizeButton.Name = "binarizeButton";
+            this.binarizeButton.Size = new System.Drawing.Size(123, 36);
+            this.binarizeButton.TabIndex = 13;
+            this.binarizeButton.Text = "Бинаризовать";
+            this.binarizeButton.UseVisualStyleBackColor = true;
+            this.binarizeButton.Click += new System.EventHandler(this.binarizeButton_Click);
+            // 
+            // numericUpDown1
+            // 
+            this.numericUpDown1.Location = new System.Drawing.Point(521, 28);
+            this.numericUpDown1.Maximum = new decimal(new int[] {
+            255,
+            0,
+            0,
+            0});
+            this.numericUpDown1.Name = "numericUpDown1";
+            this.numericUpDown1.Size = new System.Drawing.Size(120, 20);
+            this.numericUpDown1.TabIndex = 12;
+            this.numericUpDown1.Value = new decimal(new int[] {
+            125,
+            0,
+            0,
+            0});
             // 
             // saveButton
             // 
@@ -296,32 +325,15 @@
             this.openGray.UseVisualStyleBackColor = true;
             this.openGray.Click += new System.EventHandler(this.openGray_Click);
             // 
-            // numericUpDown1
+            // buildGistogrammsButton2
             // 
-            this.numericUpDown1.Location = new System.Drawing.Point(521, 28);
-            this.numericUpDown1.Maximum = new decimal(new int[] {
-            255,
-            0,
-            0,
-            0});
-            this.numericUpDown1.Name = "numericUpDown1";
-            this.numericUpDown1.Size = new System.Drawing.Size(120, 20);
-            this.numericUpDown1.TabIndex = 12;
-            this.numericUpDown1.Value = new decimal(new int[] {
-            125,
-            0,
-            0,
-            0});
-            // 
-            // binarizeButton
-            // 
-            this.binarizeButton.Location = new System.Drawing.Point(647, 12);
-            this.binarizeButton.Name = "binarizeButton";
-            this.binarizeButton.Size = new System.Drawing.Size(123, 36);
-            this.binarizeButton.TabIndex = 13;
-            this.binarizeButton.Text = "Бинаризовать";
-            this.binarizeButton.UseVisualStyleBackColor = true;
-            this.binarizeButton.Click += new System.EventHandler(this.binarizeButton_Click);
+            this.buildGistogrammsButton2.Location = new System.Drawing.Point(776, 12);
+            this.buildGistogrammsButton2.Name = "buildGistogrammsButton2";
+            this.buildGistogrammsButton2.Size = new System.Drawing.Size(162, 36);
+            this.buildGistogrammsButton2.TabIndex = 14;
+            this.buildGistogrammsButton2.Text = "Построить гистограммы";
+            this.buildGistogrammsButton2.UseVisualStyleBackColor = true;
+            this.buildGistogrammsButton2.Click += new System.EventHandler(this.buildGistogrammsButton2_Click);
             // 
             // MainForm
             // 
@@ -342,9 +354,9 @@
             ((System.ComponentModel.ISupportInitialize)(this.grayChart)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.binChart)).EndInit();
             this.binarization.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox4)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).EndInit();
-            ((System.ComponentModel.ISupportInitialize)(this.numericUpDown1)).EndInit();
             this.ResumeLayout(false);
 
         }
@@ -374,6 +386,7 @@
         private System.Windows.Forms.Button saveButton;
         private System.Windows.Forms.Button binarizeButton;
         private System.Windows.Forms.NumericUpDown numericUpDown1;
+        private System.Windows.Forms.Button buildGistogrammsButton2;
     }
 }
 

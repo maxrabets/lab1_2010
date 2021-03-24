@@ -20,6 +20,10 @@ namespace lab1_2010
         public MainForm()
         {
             InitializeComponent();
+            binChart.ChartAreas[0].AxisX.Minimum = 0;
+            binChart.ChartAreas[0].AxisX.Maximum = 255;
+            grayChart.ChartAreas[0].AxisX.Maximum = 255;
+            grayChart.ChartAreas[0].AxisX.Minimum = 0;
         }
 
         private bool findRadius(int i, int j, int i1, int j1, int R)
@@ -262,6 +266,28 @@ namespace lab1_2010
             }
         }
 
+        private Series BuildGistogramm(Bitmap bitmap, Series gistogramm)
+        {
+            gistogramm.ChartType = SeriesChartType.Column;
+
+            int[,] pixelArray = new int[bitmap.Width, bitmap.Height];
+
+            for (int i = 0; i < bitmap.Width; i++)
+            {
+                for (int j = 0; j < bitmap.Height; j++)
+                {
+                    Color pixel = bitmap.GetPixel(i, j);
+                    pixelArray[i, j] = pixel.R;
+                }
+            }
+            Dictionary<int, int> numberOfColors = getNumberOfColorsInBitmap(pixelArray);
+            foreach (int key in numberOfColors.Keys)
+            {
+                gistogramm.Points.AddXY(key, numberOfColors[key]);
+            }
+            return gistogramm;
+        }
+
         private void button1_Click(object sender, EventArgs e)
         {
             // binary
@@ -287,7 +313,7 @@ namespace lab1_2010
             grayGistogramm.ChartType = SeriesChartType.Column;
 
             //List<int> valuesInGrayBitmap = getValuesInGrayBitmap(grayBitmapArray);
-            Dictionary<int, int> numberOfColors = getNumberOfColorsInGrayBitmap(grayBitmapArray);
+            Dictionary<int, int> numberOfColors = getNumberOfColorsInBitmap(grayBitmapArray);
             foreach(int key in numberOfColors.Keys)
             {
                 grayGistogramm.Points.AddXY(key, numberOfColors[key]);
@@ -311,7 +337,7 @@ namespace lab1_2010
         }
 
 
-        private Dictionary<int, int> getNumberOfColorsInGrayBitmap(int[,] bmp)
+        private Dictionary<int, int> getNumberOfColorsInBitmap(int[,] bmp)
         {
             Dictionary<int, int> numberOfColors = new Dictionary<int, int>();
             foreach (int pixelColor in bmp)
@@ -338,6 +364,7 @@ namespace lab1_2010
                 bitmap = (Bitmap)Bitmap.FromFile(fileName);
                 byte borderlineValue = (byte)(255 - calculateAverageBrightness(bitmap));
                 pictureBox3.Image = bitmap;
+                numericUpDown1.Value = borderlineValue;
                 pictureBox4.Image = binarize(bitmap, borderlineValue);
             }
         }
@@ -403,6 +430,18 @@ namespace lab1_2010
                 //Image image = Bitmap.FromFile(fileName);
                 bitmap = (Bitmap)pictureBox3.Image;
                 pictureBox4.Image = binarize(bitmap, (byte)numericUpDown1.Value);
+        }
+
+        private void buildGistogrammsButton2_Click(object sender, EventArgs e)
+        {
+            Series binGistogramm = new Series("binary");
+            binGistogramm = BuildGistogramm((Bitmap) pictureBox4.Image, binGistogramm);
+            binChart.Series.Clear();
+            binChart.Series.Add(binGistogramm);
+            Series grayGistogramm = new Series("gray");
+            grayGistogramm = BuildGistogramm((Bitmap)pictureBox3.Image, grayGistogramm);
+            grayChart.Series.Clear();
+            grayChart.Series.Add(grayGistogramm);
         }
     }
 }
