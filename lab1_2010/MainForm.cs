@@ -365,7 +365,7 @@ namespace lab1_2010
                 byte borderlineValue = (byte)(255 - calculateAverageBrightness(bitmap));
                 pictureBox3.Image = bitmap;
                 numericUpDown1.Value = borderlineValue;
-                pictureBox4.Image = binarize(bitmap, borderlineValue);
+                pictureBox4.Image = binarizeAvgBrightness(bitmap, borderlineValue);
             }
         }
 
@@ -405,6 +405,127 @@ namespace lab1_2010
             return binBitmap;
         }
 
+        private Bitmap binarizeAvgBrightness(Bitmap grayImage, byte borderlineValue)
+        {
+            Bitmap binBitmap = new Bitmap(grayImage.Width, grayImage.Height);
+            int[,] grayBitArray = new int[grayImage.Width, grayImage.Height];
+            for (int i = 0; i < grayImage.Width; i++)
+            {
+                for (int j = 0; j < grayImage.Height; j++)
+                {
+                    Color pixel = grayImage.GetPixel(i, j);
+                    grayBitArray[i, j] = pixel.B;
+                }
+            }
+            for (int i = 0; i < grayImage.Width; i++)
+            {
+                for (int j = 0; j < grayImage.Height; j++)
+                {
+                    
+                    // лево
+                    if(i == 0)
+                    {
+                        if (j == 0)
+                        {
+                            if (grayBitArray[i, j] <= borderlineValue
+                            || grayBitArray[i, j + 1] <= borderlineValue
+                            || grayBitArray[i + 1, j] <= borderlineValue
+                            || grayBitArray[i + 1, j + 1] <= borderlineValue
+                            )
+                                binBitmap.SetPixel(i, j, Color.FromArgb(0, 0, 0));
+                            else
+                                binBitmap.SetPixel(i, j, Color.FromArgb(255, 255, 255));
+                        }
+                        if (j == grayImage.Height - 1)
+                        {
+                            if (grayBitArray[i, j] <= borderlineValue
+                            || grayBitArray[i, j - 1] <= borderlineValue
+                            || grayBitArray[i + 1, j] <= borderlineValue
+                            || grayBitArray[i + 1, j - 1] <= borderlineValue
+                            )
+                                binBitmap.SetPixel(i, j, Color.FromArgb(0, 0, 0));
+                            else
+                                binBitmap.SetPixel(i, j, Color.FromArgb(255, 255, 255));
+                        }
+                        continue;
+                    }
+                    // право
+                    else if(i == grayImage.Width - 1)
+                    {
+                        if (j == 0)
+                        {
+                            if (grayBitArray[i, j] <= borderlineValue
+                                || grayBitArray[i, j + 1] <= borderlineValue
+                                || grayBitArray[i - 1, j] <= borderlineValue
+                                || grayBitArray[i - 1, j + 1] <= borderlineValue
+                            )
+                                binBitmap.SetPixel(i, j, Color.FromArgb(0, 0, 0));
+                            else
+                                binBitmap.SetPixel(i, j, Color.FromArgb(255, 255, 255));                            
+                        }
+                        if (j == grayImage.Height - 1)
+                        {
+                            if (grayBitArray[i, j] <= borderlineValue
+                                || grayBitArray[i, j - 1] <= borderlineValue
+                                || grayBitArray[i - 1, j - 1] <= borderlineValue
+                                || grayBitArray[i - 1, j] <= borderlineValue
+                            )
+                                binBitmap.SetPixel(i, j, Color.FromArgb(0, 0, 0));
+                            else
+                                binBitmap.SetPixel(i, j, Color.FromArgb(255, 255, 255));
+                        }
+                        continue;
+                    }
+                    // верх
+                    if (j == 0)
+                    {
+                        if (grayBitArray[i, j] <= borderlineValue
+                        || grayBitArray[i, j + 1] <= borderlineValue
+                        || grayBitArray[i + 1, j] <= borderlineValue
+                        || grayBitArray[i + 1, j + 1] <= borderlineValue
+                        || grayBitArray[i - 1, j] <= borderlineValue
+                        || grayBitArray[i - 1, j + 1] <= borderlineValue
+                        )
+                            binBitmap.SetPixel(i, j, Color.FromArgb(0, 0, 0));
+                        else
+                            binBitmap.SetPixel(i, j, Color.FromArgb(255, 255, 255));
+                        continue;
+                    }
+                    // низ
+                    if (j == grayImage.Height - 1)
+                    {
+                        if (grayBitArray[i, j] <= borderlineValue
+                        || grayBitArray[i, j - 1] <= borderlineValue
+                        || grayBitArray[i + 1, j] <= borderlineValue
+                        || grayBitArray[i + 1, j - 1] <= borderlineValue
+                        || grayBitArray[i - 1, j - 1] <= borderlineValue
+                        || grayBitArray[i - 1, j] <= borderlineValue
+                        )
+                            binBitmap.SetPixel(i, j, Color.FromArgb(0, 0, 0));
+                        else
+                            binBitmap.SetPixel(i, j, Color.FromArgb(255, 255, 255));
+                        continue;
+                    }
+                    // не граничное
+                        if (grayBitArray[i, j] <= borderlineValue
+                        || grayBitArray[i, j+1] <= borderlineValue
+                        || grayBitArray[i, j-1] <= borderlineValue
+                        || grayBitArray[i+1, j] <= borderlineValue
+                        || grayBitArray[i+1, j+1] <= borderlineValue
+                        || grayBitArray[i+1, j-1] <= borderlineValue
+                        || grayBitArray[i-1, j-1] <= borderlineValue
+                        || grayBitArray[i-1, j] <= borderlineValue
+                        || grayBitArray[i-1, j+1] <= borderlineValue                        
+                        )
+                            binBitmap.SetPixel(i, j, Color.FromArgb(0, 0, 0));
+                        else
+                            binBitmap.SetPixel(i, j, Color.FromArgb(255, 255, 255));
+                    
+                }
+            }
+            return binBitmap;
+        }
+
         private void saveButton_Click(object sender, EventArgs e)
         {
             if (saveFileDialog1.ShowDialog() == DialogResult.OK)
@@ -418,11 +539,6 @@ namespace lab1_2010
                     MessageBox.Show("Ошибка");
                 }
             }
-        }
-
-        private void button2_Click(object sender, EventArgs e)
-        {
-
         }
 
         private void binarizeButton_Click(object sender, EventArgs e)
